@@ -18,9 +18,9 @@ Malá appka na telefon, která za tebe rozhodne maličkosti. Máš dvě možnost
 
 ## Jak to běží na internetu
 
-Appku hostuje **GitHub Pages** zdarma. Zapíná se jednou: **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main`, složka `/ (root)` → Save**.
+Appka patří do studia **Blue Folder** (organizace `Blue-Folder` na GitHubu) a hostuje ji **GitHub Pages** zdarma. Zapíná se jednou: **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main`, složka `/ (root)` → Save**.
 
-Po minutě je appka na adrese **https://barboracabalka.github.io/qdm/**.
+Po minutě je appka na adrese **https://blue-folder.github.io/qdm/**.
 
 ## Jak si ji dát na plochu
 

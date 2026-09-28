@@ -1,6 +1,6 @@
 # QDM – kontext projektu
 
-Osobní projekt Barbory: webová appka na telefon (PWA) „quick decision maker“, která pomáhá rozhodnout se v maličkostech, když je mozek po práci unavený. Nejde do App Storu ani Google Play. Hostuje se na GitHub Pages a lidé si ji přidají na plochu. Barbora se na projektu zároveň učí, jak to celé funguje: vysvětluj jí změny srozumitelně, česky a bez zbytečného žargonu.
+Osobní projekt Barbory ze studia Blue Folder (GitHub organizace `Blue-Folder`, kam budou patřit i další appky): webová appka na telefon (PWA) „quick decision maker“, která pomáhá rozhodnout se v maličkostech, když je mozek po práci unavený. Nejde do App Storu ani Google Play. Hostuje se na GitHub Pages a lidé si ji přidají na plochu. Barbora se na projektu zároveň učí, jak to celé funguje: vysvětluj jí změny srozumitelně, česky a bez zbytečného žargonu.
 
 Komunikace: česky.
 
@@ -29,4 +29,5 @@ Komunikace: česky.
 - `sw.js`: offline režim a aktualizace. HTML se načítá nejdřív ze sítě (vždy čerstvá verze), ostatní soubory z cache. Při změně ikon nebo manifestu zvyš `VERSION` v `sw.js`.
 - `manifest.webmanifest` + `icons/`: instalace na plochu.
 - Mikrofon a zatřesení fungují jen na skutečné https adrese, ne v náhledech.
-- Web: https://barboracabalka.github.io/qdm/ (GitHub Pages z větve `main`).
+- Web: https://blue-folder.github.io/qdm/ (GitHub Pages z větve `main`), repozitář `Blue-Folder/qdm`.
+- Commity podepisuj jako `barbaritta <barbaritta@users.noreply.github.com>`, ne celým jménem ani osobním e-mailem.
