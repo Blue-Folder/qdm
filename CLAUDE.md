@@ -15,6 +15,7 @@ Komunikace: česky.
 
 ## Pravidla odpovědí
 - Poměr je vždy **40 % jo / tohle, 40 % ne / tamto, 20 % neutrál** (neutrál = „dej si 5 minut oraz a zkus to znovu“ apod.).
+- Tohle/Tamto: odpověď ukazuje čísla (nadpis „1. Tohle“, otázka „1. … nebo 2. …?“, velký text „1. Pizza“). Neutrál se tu dělí napůl na „obojí“ (10 %) a „oraz / ani jedno“ (10 %).
 - Odpovědi mají být fresh, krátké, vtipné, trochu drzé a fakt náhodné. Stejná odpověď nepadne dvakrát po sobě.
 - Každá odpověď má velký text a menší doplněk (např. „Ne.“ + „A nesmlouvej.“).
 

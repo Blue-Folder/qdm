@@ -279,8 +279,12 @@
       ['{x}.', 'A nevracej se k tomu.'], ['{x}!', 'Vesmír hlasoval.'], ['{x}.', 'Bez debaty.'], ['{x}.', 'Tohle bylo rychlý, co?']
     ],
     pickMeh: [
-      ['Ani jedno.', 'Dej si vodu a zkus to znovu.'], ['Obojí?', 'Obojí.'], ['Remíza.', 'Klepni znova.'],
+      ['Ani jedno.', 'Dej si vodu a zkus to znovu.'], ['Remíza.', 'Klepni znova.'],
       ['Pět minut oraz.', 'Pak vyber znovu.'], ['Ani jedno.', 'Jdi se projít.']
+    ],
+    both: [
+      ['Obojí.', 'Proč si vybírat?'], ['Obojí!', 'Kompromisy jsou pro slabochy.'], ['Obojí.', 'Nejdřív 1., pak 2.'],
+      ['Proč ne obojí?', 'Vesmír to dovolil.'], ['Dej si obojí.', 'Zasloužíš si to.'], ['Obojí.', 'A nikomu to neříkej.']
     ]
   };
   const last = {};
@@ -299,10 +303,14 @@
       return { kind: key === 'yes' ? 'Jo' : key === 'no' ? 'Ne' : 'Hmm', q: $('q').value.trim(), big, small };
     }
     const a = $('o1').value.trim() || 'Tohle', b = $('o2').value.trim() || 'Tamto';
-    const q = a + ' nebo ' + b + '?';
-    if (cat === 'n'){ const [big, small] = rnd('pickMeh'); return { kind:'Hmm', q, big, small }; }
-    const x = cat === 'a' ? a : b; const [big, small] = rnd('pick');
-    return { kind: cat === 'a' ? 'Tohle' : 'Tamto', q, big: big.replace('{x}', x), small };
+    const q = '1. ' + a + ' nebo 2. ' + b + '?';
+    if (cat === 'n'){
+      // neutrál (20 %) se dělí napůl: „obojí“ a „oraz“
+      if (Math.random() < 0.5){ const [big, small] = rnd('both'); return { kind:'1. + 2.', q, big, small }; }
+      const [big, small] = rnd('pickMeh'); return { kind:'Hmm', q, big, small };
+    }
+    const n = cat === 'a' ? '1.' : '2.', x = cat === 'a' ? a : b; const [big, small] = rnd('pick');
+    return { kind: n + ' ' + (cat === 'a' ? 'Tohle' : 'Tamto'), q, big: n + ' ' + big.replace('{x}.', '{x}').replace('{x}', x), small };
   }
 
   // ---------- theme toggle (white dot = light, black dot = dark) ----------
