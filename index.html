@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4EFE4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0E20" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Quick decision maker. Klepni na kouli a rozhodni se v maličkostech.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="QDM">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>QDM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+  :root{
+    --blue:#1E3BD8;
+    --blue-deep:#1428A8;
+    --blue-soft:rgba(30,59,216,.09);
+    --blue-line:rgba(30,59,216,.28);
+    --cream:#F4EFE4;
+    --cream-dim:rgba(244,239,228,.72);
+    --bg:var(--cream);
+    --ink:#1E3BD8;
+    --ink-soft:rgba(30,59,216,.09);
+    --ink-line:rgba(30,59,216,.28);
+    --flood:#1E3BD8;--on-flood:#F4EFE4;--on-flood-dim:rgba(244,239,228,.72);
+    color-scheme:light;
+    --font:"Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0B0E20;--ink:#8C9BFF;--ink-soft:rgba(140,155,255,.12);--ink-line:rgba(140,155,255,.34);color-scheme:dark;
+      --flood:#121842;--on-flood:#8C9BFF;--on-flood-dim:rgba(140,155,255,.62);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0B0E20;--ink:#8C9BFF;--ink-soft:rgba(140,155,255,.12);--ink-line:rgba(140,155,255,.34);color-scheme:dark;
+      --flood:#121842;--on-flood:#8C9BFF;--on-flood-dim:rgba(140,155,255,.62);
+  }
+  body{transition:background .25s ease, color .25s ease}
+  .theme{display:flex;gap:4px;padding:4px;border:1.5px solid var(--ink-line);border-radius:99px}
+  .theme button{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;padding:0}
+  .theme i{display:block;width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+  .theme [data-t="light"] i{background:#FFFFFF}
+  .theme [data-t="dark"] i{background:#0A0A0A;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+  .theme button[aria-pressed="true"]{box-shadow:0 0 0 1.5px var(--ink)}
+  .top-r{display:flex;align-items:center;gap:8px}
+  [hidden]{display:none!important}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  img{max-width:100%}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--font);
+    -webkit-font-smoothing:antialiased;overflow:hidden;
+    -webkit-tap-highlight-color:transparent;user-select:none;
+  }
+  .app{
+    position:relative;height:100%;max-width:440px;margin:0 auto;
+    padding-inline:20px;box-sizing:border-box;display:flex;flex-direction:column;
+  }
+  .screen{display:flex;flex-direction:column;height:100%;padding-block:20px 28px;box-sizing:border-box}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+  /* ---------- home ---------- */
+  .brand{display:flex;align-items:baseline;gap:10px;margin-top:8px}
+  .brand b{font-size:44px;font-weight:800;letter-spacing:-.04em;line-height:1}
+  .brand span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+  .home-lead{font-size:34px;line-height:1.05;font-weight:600;letter-spacing:-.025em;margin:auto 0 28px;text-wrap:balance;max-width:14ch}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .mode{
+    display:flex;flex-direction:column;align-items:flex-start;gap:28px;text-align:left;
+    border:2px solid var(--ink);border-radius:28px;padding:18px 16px 16px;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .mode:active{transform:scale(.97);background:var(--ink-soft)}
+  .mode svg{width:52px;height:52px}
+  .mode strong{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .mode small{display:block;font-size:13px;opacity:.72;margin-top:6px;line-height:1.3}
+  .foot{font-size:12px;opacity:.55;margin-top:18px;letter-spacing:.02em}
+
+  /* ---------- ask ---------- */
+  .top{display:flex;align-items:center;justify-content:space-between;height:40px}
+  .back{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;padding:8px 8px 8px 0}
+  .tag{font-size:11px;letter-spacing:.16em;text-transform:uppercase;border:1.5px solid var(--ink-line);border-radius:99px;padding:5px 10px}
+  .hello{font-size:clamp(34px,11vw,46px);font-weight:800;letter-spacing:-.04em;line-height:1;margin:28px 0 18px;white-space:nowrap}
+  .iw{position:relative}
+  .iw input{padding-right:54px}
+  .iw.has input{padding-right:96px}
+  .field input:focus::placeholder{color:transparent}
+  .clr{
+    position:absolute;right:50px;top:50%;transform:translateY(-50%);
+    width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+    background:var(--ink-line);color:var(--bg);
+  }
+  .clr svg{width:12px;height:12px}
+  .mic{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink);
+    transition:background .15s ease;
+  }
+  .mic:active{background:var(--ink-line)}
+  .mic svg{width:22px;height:22px}
+  .mic.rec{background:var(--ink);color:var(--bg);animation:micpulse 1s ease-in-out infinite}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(30,59,216,.35)}50%{box-shadow:0 0 0 8px rgba(30,59,216,0)}}
+  .toast{
+    position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);
+    background:var(--ink);color:var(--bg);font-size:14px;padding:10px 16px;border-radius:99px;
+    opacity:0;transition:opacity .2s ease, transform .2s ease;pointer-events:none;z-index:9;max-width:calc(100% - 40px);text-align:center
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .field{display:flex;flex-direction:column;gap:8px}
+  .field input{
+    width:100%;box-sizing:border-box;font:inherit;font-size:18px;font-weight:600;color:var(--ink);
+    background:var(--ink-soft);border:0;border-radius:16px;padding:14px 16px;user-select:text;
+  }
+  .field input::placeholder{color:var(--ink);opacity:.42;font-weight:400}
+  .or{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;padding-left:16px}
+
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:260px}
+  .orb{
+    position:relative;width:min(300px,78vw);aspect-ratio:1;max-width:100%;border-radius:50%;
+    display:block;padding:0;touch-action:manipulation;
+  }
+  .orb canvas{position:absolute;inset:0;width:100%;height:100%}
+  .hint{font-size:13px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;text-align:center;transition:opacity .2s ease}
+  .stage.busy .hint{opacity:0}
+
+  /* ---------- flood + answer ---------- */
+  .flood{
+    position:fixed;inset:0;z-index:5;background:var(--flood);color:var(--on-flood);
+    clip-path:circle(0px at var(--x,50%) var(--y,70%));
+    transition:clip-path .34s cubic-bezier(.7,0,.25,1);pointer-events:none;
+  }
+  .flood.on{clip-path:circle(150vmax at var(--x,50%) var(--y,70%));pointer-events:auto}
+  .answer{
+    height:100%;max-width:440px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) 20px calc(28px + env(safe-area-inset-bottom,0px));
+    box-sizing:border-box;display:flex;flex-direction:column;
+  }
+  .a-kind{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--on-flood-dim)}
+  .a-q{font-size:17px;margin-top:8px;color:var(--on-flood-dim);overflow-wrap:anywhere}
+  .a-body{margin:auto 0;display:flex;flex-direction:column;gap:14px}
+  .a-big{font-size:clamp(46px,14vw,66px);font-weight:800;letter-spacing:-.045em;line-height:.95;text-wrap:balance;overflow-wrap:anywhere}
+  .a-small{font-size:20px;line-height:1.3;color:var(--on-flood-dim);text-wrap:balance}
+  .a-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .a-actions button{border:2px solid var(--on-flood);border-radius:99px;padding:14px;font-size:16px;font-weight:600;color:var(--on-flood)}
+  .a-actions .solid{background:var(--on-flood);color:var(--flood)}
+  .answer > *{opacity:0;transform:translateY(12px);transition:opacity .22s ease, transform .22s ease}
+  .flood.shown .answer > *{opacity:1;transform:none}
+  .flood.shown .a-body{transition-delay:.04s}
+  .flood.shown .a-actions{transition-delay:.1s}
+
+  @media (prefers-reduced-motion: reduce){
+    .flood{transition:none}
+    .answer > *{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- HOME -->
+  <section class="screen" id="home">
+    <div class="brand" style="align-items:center"><b>QDM</b><span>quick decision maker</span><div style="margin-left:auto;align-self:center"><div class="theme" role="group" aria-label="Světlý nebo tmavý režim"><button data-t="light" aria-label="Světlý režim" aria-pressed="false"><i></i></button><button data-t="dark" aria-label="Tmavý režim" aria-pressed="false"><i></i></button></div></div></div>
+    <p class="home-lead">Mozek má dneska padla? Rozhodnu za tebe.</p>
+    <div class="modes">
+      <button class="mode" data-mode="yn" aria-label="Režim Jo nebo Ne">
+        <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="26" cy="26" r="23"/>
+          <path d="M26 3a23 23 0 0 1 0 46z" fill="currentColor" stroke="none"/>
+          <path d="M9 26l4 4 6-8" />
+          <path d="M33 21l8 8M41 21l-8 8" style="stroke:var(--bg)"/>
+        </svg>
+        <span><strong>Jo / Ne</strong><small>Mám, nebo nemám?</small></span>
+      </button>
+      <button class="mode" data-mode="tt" aria-label="Režim Tohle nebo Tamto">
+        <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/>
+          <circle cx="40" cy="12" r="8"/>
+          <path d="M26 49V32M26 32L12 22M26 32l14-10"/>
+        </svg>
+        <span><strong>Tohle / Tamto</strong><small>Jedno ze dvou.</small></span>
+      </button>
+    </div>
+    <p class="foot">Odpovědi jsou fakt náhodné. Za čokoládu neručíme.</p>
+  </section>
+
+  <!-- ASK -->
+  <section class="screen" id="ask" hidden>
+    <div class="top">
+      <button class="back" id="back" aria-label="Zpět na výběr">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3L5 9l6 6"/></svg>Zpět
+      </button>
+      <div class="top-r"><div class="theme" role="group" aria-label="Světlý nebo tmavý režim"><button data-t="light" aria-label="Světlý režim" aria-pressed="false"><i></i></button><button data-t="dark" aria-label="Tmavý režim" aria-pressed="false"><i></i></button></div><span class="tag" id="tag">Jo / Ne</span></div>
+    </div>
+    <h1 class="hello">Ahoj, co řešíš?</h1>
+
+    <div class="field" id="f-yn">
+      <div class="iw">
+        <input id="q" type="text" maxlength="60" placeholder="Dát si čokoládu?" autocomplete="off">
+        <button class="clr" data-for="q" aria-label="Vymazat" hidden></button>
+        <button class="mic" data-for="q" aria-label="Namluvit otázku"></button>
+      </div>
+    </div>
+    <div class="field" id="f-tt" hidden>
+      <div class="iw">
+        <input id="o1" type="text" maxlength="30" placeholder="1. Tohle" autocomplete="off">
+        <button class="clr" data-for="o1" aria-label="Vymazat" hidden></button>
+        <button class="mic" data-for="o1" aria-label="Namluvit první možnost"></button>
+      </div>
+      <span class="or">nebo</span>
+      <div class="iw">
+        <input id="o2" type="text" maxlength="30" placeholder="2. Tamto" autocomplete="off">
+        <button class="clr" data-for="o2" aria-label="Vymazat" hidden></button>
+        <button class="mic" data-for="o2" aria-label="Namluvit druhou možnost"></button>
+      </div>
+    </div>
+
+    <div class="stage">
+      <button class="orb" id="orb" aria-label="Rozhodni za mě">
+        <canvas id="cv"></canvas>
+      </button>
+      <p class="hint">Klepni nebo zatřes</p>
+    </div>
+  </section>
+</div>
+
+<div class="flood" id="flood" aria-live="polite">
+  <div class="answer">
+    <div>
+      <div class="a-kind" id="aKind">Jo</div>
+      <div class="a-q" id="aQ"></div>
+    </div>
+    <div class="a-body">
+      <div class="a-big" id="aBig"></div>
+      <div class="a-small" id="aSmall"></div>
+    </div>
+    <div class="a-actions">
+      <button id="again" class="solid">Znovu</button>
+      <button id="menu">Menu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const home = $('home'), ask = $('ask'), orb = $('orb'), flood = $('flood');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let mode = 'yn', busy = false, open = false;
+
+  const P = {
+    yes: [
+      ['Jo.', 'Hned. Bez výčitek.'], ['Jdi do toho!', 'Tohle bylo snadný.'], ['Stoprocentně.', 'Vesmír kývl.'],
+      ['Ano.', 'A nediskutuj.'], ['Zasloužíš si to.', 'Fakt jo.'], ['Jasně!', 'Kdo ti to zakáže?'],
+      ['Jo, dneska jo.', 'Dneska je ten den.'], ['Do toho.', 'Šampione.'], ['Ano!', 'A klidně dvakrát.'],
+      ['Jo.', 'Život je krátkej.'], ['Určitě.', 'Běž, než si to rozmyslíš.'], ['Jasný jo.', 'Proč vůbec váháš?']
+    ],
+    no: [
+      ['Dneska radši ne.', 'Zítřejší ty ti poděkuje.'], ['Ne.', 'Věř mi.'], ['Nope.', 'Krátký a jasný.'],
+      ['Ani náhodou.', 'Fakt ne.'], ['Tohle nech bejt.', 'Nestojí to za to.'], ['Hmm… ne.', 'Přemýšlel jsem. Ne.'],
+      ['Ne.', 'A nesmlouvej.'], ['Vesmír říká ne.', 'Neber to osobně.'], ['Tentokrát pas.', 'Příště možná.'],
+      ['Ne.', 'Napij se radši vody.'], ['Nee.', 'Jdi si lehnout.'], ['Radši ne.', 'Tvůj mozek taky nechce.']
+    ],
+    meh: [
+      ['Pět minut oraz.', 'Pak to zkus znovu.'], ['Mozek na nule.', 'Třikrát se nadechni.'], ['Nevím.', 'Ani já dneska nemám.'],
+      ['Napij se vody.', 'A přijď zpátky.'], ['Protáhni se.', 'Pak se zeptej znova.'], ['Zeptej se za chvíli.', 'Teď je to fifty-fifty.'],
+      ['Hmm.', 'Tohle chce kafe, ne rozhodnutí.']
+    ],
+    pick: [
+      ['{x}.', 'Jasná volba.'], ['{x}!', 'Neptej se proč.'], ['{x}.', 'Druhý počká.'], ['{x}.', 'Srdce to ví.'],
+      ['{x}.', 'A nevracej se k tomu.'], ['{x}!', 'Vesmír hlasoval.'], ['{x}.', 'Bez debaty.'], ['{x}.', 'Tohle bylo rychlý, co?']
+    ],
+    pickMeh: [
+      ['Ani jedno.', 'Dej si vodu a zkus to znovu.'], ['Obojí?', 'Obojí.'], ['Remíza.', 'Klepni znova.'],
+      ['Pět minut oraz.', 'Pak vyber znovu.'], ['Ani jedno.', 'Jdi se projít.']
+    ]
+  };
+  const last = {};
+  const rnd = (key) => {
+    const arr = P[key]; let i;
+    do { i = Math.floor(Math.random() * arr.length); } while (arr.length > 1 && i === last[key]);
+    last[key] = i; return arr[i];
+  };
+
+  function decide(){
+    const r = Math.random();
+    const cat = r < 0.4 ? 'a' : r < 0.8 ? 'b' : 'n'; // 40 / 40 / 20
+    if (mode === 'yn'){
+      const key = cat === 'a' ? 'yes' : cat === 'b' ? 'no' : 'meh';
+      const [big, small] = rnd(key);
+      return { kind: key === 'yes' ? 'Jo' : key === 'no' ? 'Ne' : 'Hmm', q: $('q').value.trim(), big, small };
+    }
+    const a = $('o1').value.trim() || 'Tohle', b = $('o2').value.trim() || 'Tamto';
+    const q = a + ' nebo ' + b + '?';
+    if (cat === 'n'){ const [big, small] = rnd('pickMeh'); return { kind:'Hmm', q, big, small }; }
+    const x = cat === 'a' ? a : b; const [big, small] = rnd('pick');
+    return { kind: cat === 'a' ? 'Tohle' : 'Tamto', q, big: big.replace('{x}', x), small };
+  }
+
+  // ---------- theme toggle (white dot = light, black dot = dark) ----------
+  const root = document.documentElement;
+  let inkHex = '#1E3BD8', inkRGB = '30,59,216';
+  const isDark = () => root.dataset.theme === 'dark' || (root.dataset.theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  function readInk(){
+    inkHex = getComputedStyle(root).getPropertyValue('--ink').trim() || '#1E3BD8';
+    const h = inkHex.replace('#',''); inkRGB = [0,2,4].map(i => parseInt(h.substr(i,2),16)).join(',');
+    document.querySelectorAll('.theme button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.t === 'dark') === isDark())));
+  }
+  function setTheme(t){ root.dataset.theme = t; try { localStorage.setItem('qdm-theme', t); } catch(e){} readInk(); }
+  try { const saved = localStorage.getItem('qdm-theme'); if (saved) root.dataset.theme = saved; } catch(e){}
+  document.querySelectorAll('.theme button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); setTheme(b.dataset.t); }));
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readInk);
+  new MutationObserver(readInk).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  readInk();
+
+  // ---------- particle orb: a drifting blue cloud that snaps into a sphere ----------
+  const cv = $('cv'), ctx = cv.getContext('2d');
+  const IDLE_FORM = 0.1, IDLE_SPD = 0.35;
+  const S = { form: IDLE_FORM, formT: IDLE_FORM, spd: IDLE_SPD, spdT: IDLE_SPD, fill: 0, fillT: 0, rot: 0 };
+  const N = 4200, GA = Math.PI * (3 - Math.sqrt(5));
+  const pts = [];
+  for (let i = 0; i < N; i++){
+    const y = 1 - 2 * (i + .5) / N, r = Math.sqrt(1 - y*y), th = i * GA;
+    // scattered "sleeping" position: random direction, fuzzy shell around the sphere
+    const u = Math.random()*2 - 1, a = Math.random()*Math.PI*2, q = Math.sqrt(1 - u*u);
+    const s = 0.78 + Math.pow(Math.random(), 1.8) * 0.5;
+    pts.push({ x: r*Math.cos(th), y, z: r*Math.sin(th), cx: q*Math.cos(a)*s, cy: u*s, cz: q*Math.sin(a)*s,
+               ph: Math.random()*6.28, sz: 1 + Math.random()*1.1 });
+  }
+  let W = 0, H = 0, R = 0, dpr = 1, raf = 0, lastT = 0;
+  function sizeCanvas(){
+    const b = cv.getBoundingClientRect(); if (!b.width) return;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = b.width; H = b.height; R = W * .33;
+    cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+  }
+  const approach = (v, t, k, dt) => v + (t - v) * (1 - Math.exp(-k * dt));
+  function draw(now){
+    const dt = Math.min(.05, (now - (lastT || now)) / 1000); lastT = now;
+    const t = now / 1000, waking = S.formT > .5;
+    S.form = approach(S.form, S.formT, reduce ? 99 : (waking ? 10 : 3.5), dt);
+    S.spd  = approach(S.spd,  reduce ? 0 : S.spdT, waking ? 6 : 2, dt);
+    S.fill = approach(S.fill, S.fillT, reduce ? 99 : (S.fillT ? 13 : 7), dt);
+    S.rot += S.spd * dt;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    const cx = W/2, cy = H/2;
+    // soft halo, like light bleeding through glass
+    const halo = ctx.createRadialGradient(cx, cy, R*.6, cx, cy, R*1.55);
+    halo.addColorStop(0, `rgba(${inkRGB},${.16 + S.fill*.14})`); halo.addColorStop(1, `rgba(${inkRGB},0)`);
+    ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+
+    const cr = Math.cos(S.rot), sr = Math.sin(S.rot), tl = .32, ct = Math.cos(tl), st = Math.sin(tl);
+    const f = S.form, g = 1 - f;
+    ctx.fillStyle = inkHex;
+    for (const p of pts){
+      const w = reduce ? 1 : 1 + .07 * Math.sin(t*.9 + p.ph);
+      let x = p.x*f + p.cx*w*g, y = p.y*f + p.cy*w*g, z = p.z*f + p.cz*w*g;
+      const x1 = x*cr + z*sr, z1 = -x*sr + z*cr;       // spin around Y
+      const y2 = y*ct - z1*st, z2 = y*st + z1*ct;       // tilt toward viewer
+      const k = 3.2 / (3.2 - z2);
+      const depth = Math.max(0, Math.min(1, (z2 + 1.2) / 2.4));
+      const size = p.sz * (.75 + .6*depth);
+      ctx.globalAlpha = .42 + .58*depth;
+      ctx.fillRect(cx + x1*R*k - size/2, cy + y2*R*k - size/2, size, size);
+    }
+    ctx.globalAlpha = 1;
+    // the sphere "fills" with blue glass just before the screen floods
+    if (S.fill > .01){
+      const rr = R * (1.02 + .06*S.fill);
+      const ball = ctx.createRadialGradient(cx - rr*.3, cy - rr*.35, rr*.05, cx, cy, rr);
+      const dk = isDark();
+      ball.addColorStop(0, dk ? '#5D6BC9' : '#6F82F5'); ball.addColorStop(.45, dk ? '#232C6E' : '#1E3BD8'); ball.addColorStop(1, dk ? '#121842' : '#1428A8');
+      ctx.globalAlpha = S.fill; ctx.fillStyle = ball;
+      ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    raf = requestAnimationFrame(draw);
+  }
+  function startLoop(){ if (!raf){ lastT = 0; raf = requestAnimationFrame(draw); } }
+  function stopLoop(){ cancelAnimationFrame(raf); raf = 0; }
+  window.addEventListener('resize', sizeCanvas);
+
+  function wake(){
+    if (busy || open || ask.hidden) return;
+    busy = true;
+    document.activeElement && document.activeElement.blur();
+    const res = decide();
+    $('aKind').textContent = res.kind;
+    $('aQ').textContent = res.q;
+    $('aBig').textContent = res.big;
+    $('aSmall').textContent = res.small;
+    const r = orb.getBoundingClientRect();
+    flood.style.setProperty('--x', (r.left + r.width/2) + 'px');
+    flood.style.setProperty('--y', (r.top + r.height/2) + 'px');
+    try { navigator.vibrate && navigator.vibrate(18); } catch(e){}
+    orb.classList.add('awake'); orb.parentNode.classList.add('busy');
+    S.formT = 1; S.spdT = 5.5;
+    setTimeout(() => { S.fillT = 1; }, reduce ? 0 : 250);
+    const t1 = reduce ? 0 : 400, t2 = reduce ? 0 : 700;
+    setTimeout(() => flood.classList.add('on'), t1);
+    setTimeout(() => { flood.classList.add('shown'); open = true; busy = false; $('again').focus({preventScroll:true}); }, t2);
+  }
+
+  function close(toMenu){
+    if (!open) return;
+    open = false;
+    flood.classList.remove('shown', 'on');
+    orb.classList.remove('awake'); orb.parentNode.classList.remove('busy');
+    S.formT = IDLE_FORM; S.spdT = IDLE_SPD; S.fillT = 0;
+    if (toMenu) setTimeout(() => show('home'), reduce ? 0 : 200);
+  }
+
+  function show(which, m){
+    if (m){
+      mode = m;
+      $('tag').textContent = m === 'yn' ? 'Jo / Ne' : 'Tohle / Tamto';
+      $('f-yn').hidden = m !== 'yn';
+      $('f-tt').hidden = m !== 'tt';
+    }
+    home.hidden = which !== 'home';
+    ask.hidden = which !== 'ask';
+    if (which === 'ask'){ sizeCanvas(); startLoop(); } else stopLoop();
+  }
+
+  document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => { askMotion(); show('ask', b.dataset.mode); }));
+  $('back').addEventListener('click', () => show('home'));
+  orb.addEventListener('click', wake);
+  $('again').addEventListener('click', e => { e.stopPropagation(); close(false); });
+  $('menu').addEventListener('click', e => { e.stopPropagation(); close(true); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(false); });
+
+  // Clear (×) buttons: visible once a field has text
+  const xSvg = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg>';
+  const syncClr = (input) => { const w = input.parentNode, has = input.value.length > 0; w.classList.toggle('has', has); w.querySelector('.clr').hidden = !has; };
+  document.querySelectorAll('.clr').forEach(btn => {
+    btn.innerHTML = xSvg;
+    const input = $(btn.dataset.for);
+    input.addEventListener('input', () => syncClr(input));
+    btn.addEventListener('click', () => { input.value = ''; syncClr(input); input.focus(); });
+  });
+
+  // Voice input (Web Speech API, where the browser allows the microphone)
+  const toastEl = document.createElement('div'); toastEl.className = 'toast'; document.body.appendChild(toastEl);
+  let toastT;
+  const toast = (msg) => { toastEl.textContent = msg; toastEl.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), 2400); };
+  const micSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let rec = null, recBtn = null;
+  document.querySelectorAll('.mic').forEach(btn => {
+    btn.innerHTML = micSvg;
+    btn.addEventListener('click', () => {
+      if (rec){ rec.stop(); return; }
+      if (!SR){ toast('Namlouvání tady nejde. V appce ano.'); return; }
+      const input = $(btn.dataset.for);
+      try {
+        rec = new SR(); rec.lang = 'cs-CZ'; rec.interimResults = true; rec.maxAlternatives = 1;
+        recBtn = btn; btn.classList.add('rec');
+        rec.onresult = e => {
+          let t = ''; for (const r of e.results) t += r[0].transcript;
+          t = t.trim(); if (t){ input.value = t.charAt(0).toUpperCase() + t.slice(1); syncClr(input); }
+        };
+        rec.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast('Mikrofon je tady zablokovaný. V appce půjde.'); };
+        rec.onend = () => { recBtn && recBtn.classList.remove('rec'); rec = null; recBtn = null; };
+        rec.start();
+      } catch(err){ btn.classList.remove('rec'); rec = null; toast('Namlouvání tady nejde. V appce ano.'); }
+    });
+  });
+
+  // Shake to decide (works where the browser allows motion sensors)
+  let motionAsked = false, lastShake = 0, prev = null;
+  function askMotion(){
+    if (motionAsked) return; motionAsked = true;
+    try {
+      if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function'){
+        DeviceMotionEvent.requestPermission().catch(() => {});
+      }
+    } catch(e){}
+  }
+  window.addEventListener('devicemotion', e => {
+    const a = e.accelerationIncludingGravity; if (!a || a.x == null) return;
+    if (prev){
+      const d = Math.abs(a.x - prev.x) + Math.abs(a.y - prev.y) + Math.abs(a.z - prev.z);
+      const now = Date.now();
+      if (d > 28 && now - lastShake > 1200){ lastShake = now; open ? close(false) : wake(); }
+    }
+    prev = { x:a.x, y:a.y, z:a.z };
+  });
+})();
+</script>
+
+<script>
+  // Offline + auto-update: register the service worker (see sw.js)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(reg => reg.update()).catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
